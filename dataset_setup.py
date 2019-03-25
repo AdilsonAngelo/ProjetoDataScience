@@ -45,8 +45,10 @@ with open('movies.csv', mode='w') as dataset:
                 else:
                     runtime = 'N/A'
 
-                row['Runtime'] = runtime
+                row['Runtime'] = runtime if type(runtime) != float else int(runtime)
             except:
+                # alguns runtime tem formato '1,000'
+                # sinceramente não sei o que é isso mas são apenas 22 filmes então só desconsiderei
                 continue
 
             del row['Response']
