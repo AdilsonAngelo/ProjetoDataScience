@@ -50,10 +50,8 @@ not_ok=0
 
 start=time.time()
 
-req=0
-
-tot_db=0
-tot_rq=0
+end_db=0
+end_rq=0
 
 print('\n[ Inicializando Download ]')
 for tt in basics_left.tconst:
@@ -65,8 +63,7 @@ for tt in basics_left.tconst:
     params = { 'i': tt, 'apikey': OMDb_API_key }
     start_rq = time.time()
     response = requests.get(url, params=params)
-    tot_rq = time.time()-start_rq
-    req+=1
+    end_rq = time.time()-start_rq
 
     if response.json()['Response'] == 'False':
       db_trash.insert({ "tt": tt })
@@ -76,7 +73,7 @@ for tt in basics_left.tconst:
     if response.status_code == 200 and response.json()['Response'] == 'True':
       start_db = time.time()
       db.insert(response.json())
-      tot_db += time.time()-start_db
+      end_db = time.time()-start_db
       it+=1
     else:
       print('\nparou no ' + str(it))
@@ -98,8 +95,8 @@ for tt in basics_left.tconst:
     now = time.time() - start
     print('PROGRESSO: {:6}/{:6}'.format(it, str(basics.shape[0]-not_ok)) + '[ {0:.2f}'.format((perc*100)) + '% ] '
       + str(timedelta(seconds=int(now)))
-      + ' ::: [db-delay: {:5}'.format(int(tot_db*1000/it)) + 'ms]'
-      + ' ::: [rq-delay: {:5}'.format(int(tot_rq*1000/req)) + 'ms]'
+      + ' ::: [db-delay: {:5}'.format(int(end_db*1000)) + 'ms]'
+      + ' ::: [rq-delay: {:5}'.format(int(end_rq*1000)) + 'ms]'
       + ' ::: [dbs: {:3}'.format(db_index+1) + ']'
       + ' ::: [trash: {:6}]'.format(len(db_trash)) , end='\r')
 
